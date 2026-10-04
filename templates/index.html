@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="page-index">
+    <header class="topbar">
+        <a class="brand" href="/"><span class="logo" aria-hidden="true">&#9733;</span> ComicCraft</a>
+        <h1>Turn your idea into a comic</h1>
+        <p>Describe a story and ComicCraft writes the script, draws the panels, and exports a PDF — all in one go.</p>
+    </header>
+
+    <main class="card form-card">
+        <div class="card-accent" aria-hidden="true"></div>
+
+        {% if error_message %}
+        <div class="alert alert-error" role="alert">
+            <span class="alert-icon">&#9888;</span>
+            <div class="alert-body">
+                <strong>Generation Issue:</strong> {{ error_message }}
+            </div>
+        </div>
+        {% endif %}
+
+        <form id="comic-form" action="/generate" method="post">
+            <section class="form-section">
+                <div class="section-header-wrap">
+                    <h2 class="section-title"><span class="step-chip">1</span> Your Story Idea</h2>
+                    <span class="section-tag">Start Here</span>
+                </div>
+                <p class="hint">Give ComicCraft the spark for your comic, or pick a preset spark below:</p>
+
+                <div class="preset-chips" aria-label="Preset story ideas">
+                    <button type="button" class="prompt-chip" data-prompt="A clever young fox discovers a glowing crystal deep inside an ancient whispering forest." data-char="Rusty" data-setting="forest" data-tone="dramatic" data-style="anime">
+                        &#129418; Enchanted Fox
+                    </button>
+                    <button type="button" class="prompt-chip" data-prompt="A friendly maintenance robot rescues a lost puppy from the rain in a neon cyberpunk metropolis." data-char="Bolt" data-setting="city" data-tone="light-hearted" data-style="comic book">
+                        &#129302; Cyber Robot & Pup
+                    </button>
+                    <button type="button" class="prompt-chip" data-prompt="A brave astronaut lands on an uncharted crystalline moon and makes first contact with gentle light-beings." data-char="Captain Nova" data-setting="space" data-tone="light-hearted" data-style="realistic">
+                        &#128640; Deep Space Voyage
+                    </button>
+                    <button type="button" class="prompt-chip" data-prompt="A shy student discovers a secret magical clock tower behind the old academy library." data-char="Maya" data-setting="school" data-tone="poetic" data-style="pixel art">
+                        &#127891; Academy Mystery
+                    </button>
+                </div>
+
+                <label for="story_prompt">Story Prompt</label>
+                <textarea id="story_prompt" name="story_prompt" placeholder="Describe what happens in your comic... e.g. A brave fox exploring an enchanted forest" required>{{ story_prompt or '' }}</textarea>
+            </section>
+
+            <section class="form-section">
+                <div class="section-header-wrap">
+                    <h2 class="section-title"><span class="step-chip">2</span> Characters & World</h2>
+                </div>
+                <p class="hint">Who stars in it, and where does it take place?</p>
+
+                <div class="field-grid">
+                    <div class="field">
+                        <label for="character_name">Main Character Name</label>
+                        <input type="text" id="character_name" name="character_name" placeholder="e.g. Rusty" value="{{ character_name or '' }}" required>
+                    </div>
+                    <div class="field">
+                        <label for="setting">Setting</label>
+                        <select id="setting" name="setting">
+                            <option value="forest" {% if setting == 'forest' %}selected{% endif %}>&#127794; Forest</option>
+                            <option value="school" {% if setting == 'school' %}selected{% endif %}>&#127891; School</option>
+                            <option value="city" {% if setting == 'city' %}selected{% endif %}>&#127961; City</option>
+                            <option value="space" {% if setting == 'space' %}selected{% endif %}>&#128640; Space</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="section-header-wrap">
+                    <h2 class="section-title"><span class="step-chip">3</span> Style & Mood</h2>
+                </div>
+                <p class="hint">Set the narrative tone and the visual aesthetic of your 5 panels.</p>
+
+                <div class="field-grid">
+                    <div class="field">
+                        <label for="tone">Story Tone</label>
+                        <select id="tone" name="tone">
+                            <option value="light-hearted" {% if tone == 'light-hearted' %}selected{% endif %}>&#127774; Light-hearted</option>
+                            <option value="dramatic" {% if tone == 'dramatic' %}selected{% endif %}>&#9889; Dramatic</option>
+                            <option value="poetic" {% if tone == 'poetic' %}selected{% endif %}>&#10024; Poetic</option>
+                            <option value="funny" {% if tone == 'funny' %}selected{% endif %}>&#129315; Funny</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="art_style">Art Style</label>
+                        <select id="art_style" name="art_style">
+                            <option value="anime" {% if art_style == 'anime' %}selected{% endif %}>&#127912; Anime</option>
+                            <option value="pixel art" {% if art_style == 'pixel art' %}selected{% endif %}>&#128126; Pixel Art</option>
+                            <option value="comic book" {% if art_style == 'comic book' %}selected{% endif %}>&#128218; Comic Book</option>
+                            <option value="realistic" {% if art_style == 'realistic' %}selected{% endif %}>&#128247; Realistic</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <div class="form-footer">
+                <button type="submit" id="generate-btn" class="btn btn-primary">
+                    <span class="btn-label"><span>Generate Comic</span></span>
+                </button>
+                <p class="status">Creating your comic panels… this can take a moment.</p>
+            </div>
+        </form>
+    </main>
+
+    <div class="overlay" id="loading-overlay" role="status" aria-live="polite">
+        <div class="overlay-card">
+            <div class="panel-mock" aria-hidden="true"></div>
+            <h2>Generating your comic…</h2>
+            <p id="loading-status">Writing the story outline…</p>
+            <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById("comic-form");
+        const button = document.getElementById("generate-btn");
+        const overlay = document.getElementById("loading-overlay");
+        const status = document.getElementById("loading-status");
+        const messages = [
+            "Writing the story outline…",
+            "Adding narration and dialogue…",
+            "Illustrating your panels…",
+            "Putting the comic together…"
+        ];
+        let step = 0;
+
+        form.addEventListener("submit", function () {
+            form.classList.add("is-loading");
+            button.disabled = true;
+            button.querySelector(".btn-label").innerHTML =
+                '<span class="spinner" aria-hidden="true"></span><span>Generating…</span>';
+            overlay.classList.add("is-visible");
+            status.textContent = messages[0];
+            setInterval(function () {
+                step = (step + 1) % messages.length;
+                status.textContent = messages[step];
+            }, 2200);
+        });
+
+        // Preset story spark chips
+        document.querySelectorAll(".prompt-chip").forEach(function (chip) {
+            chip.addEventListener("click", function () {
+                document.getElementById("story_prompt").value = chip.dataset.prompt || "";
+                document.getElementById("character_name").value = chip.dataset.char || "";
+                const settingSelect = document.getElementById("setting");
+                if (chip.dataset.setting) settingSelect.value = chip.dataset.setting;
+                const toneSelect = document.getElementById("tone");
+                if (chip.dataset.tone) toneSelect.value = chip.dataset.tone;
+                const styleSelect = document.getElementById("art_style");
+                if (chip.dataset.style) styleSelect.value = chip.dataset.style;
+
+                document.querySelectorAll(".prompt-chip").forEach(c => c.classList.remove("is-selected"));
+                chip.classList.add("is-selected");
+
+                document.getElementById("story_prompt").focus();
+            });
+        });
+    </script>
+</body>
+</html>

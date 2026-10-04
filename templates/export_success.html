@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic Exported — ComicCraft</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="page-success">
+    <header class="topbar">
+        <a class="brand" href="/"><span class="logo" aria-hidden="true">&#9733;</span> ComicCraft</a>
+    </header>
+
+    <main class="card success-card">
+        <div class="card-accent" aria-hidden="true"></div>
+        <div class="success-icon" aria-hidden="true">&#10003;</div>
+        <h1>Comic Exported Successfully!</h1>
+        <p class="lead">Your AI-powered comic has been successfully created! Dive back in and bring another story to life.</p>
+
+        {% if pdf_url %}
+        <p class="filename">{{ pdf_name }}</p>
+        {% else %}
+        <p class="muted">The download link is no longer available. Generate a comic to export it again.</p>
+        {% endif %}
+
+        <div class="success-actions">
+            {% if pdf_url %}
+            <a class="btn btn-primary" href="{{ pdf_url }}" download><span aria-hidden="true">&#8681;</span> Download PDF</a>
+            {% endif %}
+            <a class="btn btn-secondary" href="/">Go Create Another Comic</a>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic Preview — ComicCraft</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="page-preview">
+    <header class="topbar">
+        <a class="brand" href="/"><span class="logo" aria-hidden="true">&#9733;</span> ComicCraft</a>
+        <h1>Your Comic Preview</h1>
+        <p>Review your story panel by panel, then export it as a PDF.</p>
+    </header>
+
+    <nav class="actions" aria-label="Comic actions">
+        <a href="/" class="btn btn-secondary" onclick="history.back(); return false;">&larr; Back</a>
+        <a href="/" class="btn btn-secondary">Generate Again</a>
+        <form class="export-form" action="/export" method="post">
+            {% if comic_id %}<input type="hidden" name="comic_id" value="{{ comic_id }}">{% endif %}
+            <button type="submit" class="btn btn-primary"><span aria-hidden="true">&#8681;</span> Download Your Comic as PDF<span class="sr-only"> (Export PDF)</span></button>
+        </form>
+    </nav>
+
+    <main class="comic">
+        {% for panel in layout %}
+        <article class="panel" id="panel-{{ panel.panel_number }}">
+            <header class="panel-header">
+                <span class="panel-chip">Panel {{ panel.panel_number }}</span>
+                <h2>{{ panel.title }}</h2>
+            </header>
+            <img src="{{ panel.image_url }}" alt="Illustration for panel {{ panel.panel_number }}: {{ panel.title }}">
+            <div class="panel-body">
+                <p class="scene-description">{{ panel.scene_description }}</p>
+                <p class="narration">{{ panel.narration }}</p>
+                <p class="dialogue">{{ panel.dialogue }}</p>
+                <details class="image-prompt">
+                    <summary>Image prompt reference</summary>
+                    <code>{{ panel.image_prompt }}</code>
+                </details>
+            </div>
+        </article>
+        {% endfor %}
+    </main>
+
+    <footer class="actions actions--end" aria-label="Comic actions">
+        <a href="/" class="btn btn-secondary" onclick="history.back(); return false;">&larr; Back</a>
+        <a href="/" class="btn btn-secondary">Generate Again</a>
+        <form class="export-form" action="/export" method="post">
+            {% if comic_id %}<input type="hidden" name="comic_id" value="{{ comic_id }}">{% endif %}
+            <button type="submit" class="btn btn-primary"><span aria-hidden="true">&#8681;</span> Download Your Comic as PDF<span class="sr-only"> (Export PDF)</span></button>
+        </form>
+    </footer>
+</body>
+</html>
